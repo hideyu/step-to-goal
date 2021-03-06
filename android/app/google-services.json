@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "975043348742",
+    "project_id": "steptogoal-4c291",
+    "storage_bucket": "steptogoal-4c291.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:975043348742:android:828b02cacd3cb8b6f77687",
+        "android_client_info": {
+          "package_name": "com.hideyu.step_to_goal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "975043348742-569054ekku3bt5oqqrq50uiae51cvohb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCOxmu9ZrPiSg8-aZAlSrFdavdjVCLAXT0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "975043348742-569054ekku3bt5oqqrq50uiae51cvohb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
