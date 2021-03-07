@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:step_to_goal/screens/stepper_screen.dart';
+import 'package:step_to_goal/screens/welcome_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -13,26 +15,12 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.red,
       ),
-      home: MainHomeScreen(),
-    );
-  }
-}
-
-class MainHomeScreen extends StatefulWidget {
-  @override
-  _MainHomeScreenState createState() => _MainHomeScreenState();
-}
-
-class _MainHomeScreenState extends State<MainHomeScreen> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Step To Goal"),
-      ),
-      body: Container(
-        child: Text('fugafuga'),
-      ),
+      home: StepperScreen(),
+      initialRoute: StepperScreen.id,
+      routes: {
+        WelcomeScreen.id: (context) => WelcomeScreen(),
+        StepperScreen.id: (context) => StepperScreen()
+      },
     );
   }
 }
