@@ -18,8 +18,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.red,
       ),
-      home: StepperScreen(),
-      initialRoute: StepperScreen.id,
+      // home: StepperScreen(),
+      // initialRoute: StepperScreen.id,
+      home: WelcomeScreen(),
+      initialRoute: WelcomeScreen.id,
+
       routes: {
         WelcomeScreen.id: (context) => WelcomeScreen(),
         StepperScreen.id: (context) => StepperScreen()

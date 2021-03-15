@@ -37,7 +37,7 @@ class FirebaseHelper {
   }
 
   // 3. Firestoreのデータ（Stream）を取得する処理
-  Stream getTodoItemSnapshot() {
+  Stream getStepItemSnapshot() {
     final stepItemSnapshot = _firestore.collection('steps').snapshots();
     return stepItemSnapshot;
   }
@@ -62,7 +62,7 @@ class FirebaseHelper {
   }
 
   // 4. Firestoreにデータ（steps）を登録する処理
-  void addTodoItems({
+  void addStepItems({
     String goalItem,
     String stepItem,
     DateTime targetDate,
@@ -101,5 +101,10 @@ class FirebaseHelper {
         FirebaseDataMap.goalUser: loggedInUser.email,
       },
     );
+  }
+
+  // 6. authのゲッター
+  dynamic get getAuth {
+    return _auth;
   }
 }
