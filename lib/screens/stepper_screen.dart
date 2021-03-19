@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:step_to_goal/components/register_item_dialog.dart';
 import 'package:step_to_goal/components/stepper_timeline_listview.dart';
 import 'package:step_to_goal/utils/firebase_helper.dart';
 
@@ -12,9 +13,18 @@ class StepperScreen extends StatefulWidget {
 }
 
 class _StepperScreenState extends State<StepperScreen> {
+  FirebaseHelper _firebaseHelper = FirebaseHelper();
   final _firestore = FirebaseFirestore.instance;
   User _loggedInUser;
   List<Widget> tablist = [Text('Tab1'), Text('Tab2'), Text('Tab3')];
+
+  // 最初にログインしているユーザーを取得
+  // TODO: ログインしてない時はwelcomeにリダイレクト
+  @override
+  void initState() {
+    super.initState();
+    _loggedInUser = _firebaseHelper.getCurrentUser();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,97 +49,28 @@ class _StepperScreenState extends State<StepperScreen> {
             ],
           ),
           floatingActionButton: FloatingActionButton(
-            onPressed: () {
+            onPressed: () async {
+              // _firebaseHelper.dataFetch('1hN0tgOpSetKuT77IrRl');
+              final debugVariable = await _firestore
+                  .collection('steps')
+                  .doc('1hN0tgOpSetKuT77IrRl')
+                  .get();
+              print(debugVariable.data().runtimeType);
+
+              final mapData =
+                  new Map<String, dynamic>.from(debugVariable.data());
+              print(mapData);
+              // print("debug is bellow...");
               // showDialog(
               //   context: context,
               //   builder: (_) {
-              //     return AlertDialog(
-              //       title: Text("タイトル"),
-              //       insetPadding: EdgeInsets.symmetric(horizontal: 5),
-              //       content: SingleChildScrollView(
-              //         child: ListBody(
-              //           children: <Widget>[
-              //             Text('This is a demo alert dialog.'),
-              //             Text('Would you like to approve of this message?'),
-              //           ],
-              //         ),
-              //       ),
-              //       // Text("メッセージメッセージメッセージメッセージメッセージメッセージ"),
-              //       actions: <Widget>[
-              //         // ボタン領域
-              //         TextButton(
-              //           child: Text('Approve'),
-              //           onPressed: () {
-              //             Navigator.of(context).pop();
-              //           },
-              //         ),
-              //       ],
+              //     return PopupRegisterDialog(
+              //       loggedInUser: _loggedInUser,
               //     );
               //   },
               // );
-              showDialog(
-                context: context,
-                builder: (_) {
-                  return PopupRegisterDialog();
-                },
-              );
             },
           ),
         ));
-  }
-}
-
-class PopupRegisterDialog extends StatefulWidget {
-  @override
-  _PopupRegisterDialogState createState() => _PopupRegisterDialogState();
-}
-
-class _PopupRegisterDialogState extends State<PopupRegisterDialog> {
-  FirebaseHelper _firebasehelper = FirebaseHelper();
-  User _loggedInUser;
-  final now = DateTime.now();
-
-  @override
-  Widget build(BuildContext context) {
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      insetPadding: EdgeInsets.all(10),
-      child: Stack(
-        overflow: Overflow.visible,
-        alignment: Alignment.center,
-        children: <Widget>[
-          Container(
-            width: double.infinity,
-            height: 400,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: Colors.white,
-            ),
-            padding: EdgeInsets.fromLTRB(20, 50, 20, 20),
-            child: Text(
-              "You can make cool stuff!",
-              style: TextStyle(fontSize: 12),
-              textAlign: TextAlign.center,
-            ),
-          ),
-          TextButton(
-            child: Text('登録する'),
-            onPressed: () {
-              setState(() {
-                print("hogehoge");
-                _firebasehelper.addStepItems(
-                    goalItem: "make a cake",
-                    stepItem: "buy water",
-                    stepSize: 2,
-                    targetDate: now,
-                    difficultyLevel: 100,
-                    loggedInUser: _loggedInUser);
-              });
-              // Navigator.of(context).pop();
-            },
-          ),
-        ],
-      ),
-    );
   }
 }

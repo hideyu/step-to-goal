@@ -20,20 +20,36 @@ class StepperTimelineListView extends StatelessWidget {
         if (snapshot.hasData) {
           final stepItems = snapshot.data.docs;
 
-          List<StepperTimelineTile> stepListWidgets = [];
+          // List<StepperTimelineTile> stepListWidgets = [];
+          List<Widget> stepListWidgets = [
+            Divider(),
+            Text("デバッグ"),
+            // Text("$loggedInUser"),
+            Divider(),
+          ];
           // TODO; loggedInUserのdataだけを取得する
-          // TODO: リファクター
           for (var stepItem in stepItems) {
-            final stepItemTitle = stepItem.data()[FirebaseDataMap.step];
+            // TODO: Firestoreからデータの各値を取得、もっといい書き方がある気がする、後でリファクター
+            final stepSnapshot = stepItem.data();
+            final stepItemTitle = stepSnapshot[FirebaseDataMap.step];
             final stepDifficultyLevel =
-                stepItem.data()[FirebaseDataMap.difficultyLevel];
+                stepSnapshot[FirebaseDataMap.difficultyLevel];
             final stepTargetDate =
-                stepItem.data()[FirebaseDataMap.targetDate].toDate();
-            final stepIsDone = stepItem.data()[FirebaseDataMap.isDone];
+                stepSnapshot[FirebaseDataMap.targetDate].toDate();
+            final stepIsDone = stepSnapshot[FirebaseDataMap.isDone];
+
+            final stepId = stepItem.reference.id; //documentIdを取得して子widgetに渡す
+            final stepMapData = Map<String, dynamic>.from(
+                stepSnapshot); // Firestoreのデータをマップに変換して子widgetに渡す
 
             final stepItemWidget = StepperTimelineTile(
-                stepText: Text(
-                    '$stepItemTitle, $stepDifficultyLevel, $stepTargetDate, $stepIsDone'));
+              stepText: Text(
+                  '$stepItemTitle, $stepDifficultyLevel, $stepTargetDate, $stepIsDone'),
+              documentId: stepId,
+              isDoneNow: stepIsDone,
+              stepMapData: stepMapData,
+              loggedInUser: loggedInUser,
+            );
             stepListWidgets.add(stepItemWidget);
           }
           return ListView(
