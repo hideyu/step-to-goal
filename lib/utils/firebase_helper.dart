@@ -105,7 +105,7 @@ class FirebaseHelper {
         FirebaseDataMap.targetDate: Timestamp.fromDate(targetDate),
         FirebaseDataMap.stepSize: stepSize,
         FirebaseDataMap.isDone: false,
-        // FirebaseDataMap.user: loggedInUser.email,
+        FirebaseDataMap.user: loggedInUser.email,
       },
     );
   }

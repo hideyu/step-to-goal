@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:step_to_goal/screens/stepper_screen.dart';
+import 'package:step_to_goal/screens/test_screen.dart';
 import 'package:step_to_goal/screens/welcome_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(MyApp());
+  runApp(ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -18,14 +20,15 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.red,
       ),
-      // home: StepperScreen(),
-      // initialRoute: StepperScreen.id,
-      home: WelcomeScreen(),
-      initialRoute: WelcomeScreen.id,
+      // home: TestScreen(),
+      // initialRoute: TestScreen.id,
+      home: StepperScreen(),
+      initialRoute: StepperScreen.id,
 
       routes: {
         WelcomeScreen.id: (context) => WelcomeScreen(),
-        StepperScreen.id: (context) => StepperScreen()
+        StepperScreen.id: (context) => StepperScreen(),
+        TestScreen.id: (context) => TestScreen()
       },
     );
   }

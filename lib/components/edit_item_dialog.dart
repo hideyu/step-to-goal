@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:step_to_goal/utils/firebase_helper.dart';
 
 class PopupEditDialog extends StatefulWidget {
-  final User loggedInUser;
-  final String documentId;
+  // 親からstepデータとuserデータを受け取る
   final Map<String, dynamic> stepMapData;
+  final User loggedInUser;
+
   const PopupEditDialog({
     @required this.loggedInUser,
-    @required this.documentId,
     @required this.stepMapData,
   });
 
@@ -20,14 +20,30 @@ class PopupEditDialog extends StatefulWidget {
 class _PopupEditDialogState extends State<PopupEditDialog> {
   FirebaseHelper _firebasehelper = FirebaseHelper();
 
+  // Input Field用の変数
+  // TODO: リファクター
   String _goalInput; // ゴールの内容
   String _stepInput; // ステップの内容
   int _stepSize; // ステップのレベル（大中小）
   int _diffucultyLevel; // ステップのスコア（0~100）
-  DateTime _date = new DateTime.now(); // 現在日時
-
+  DateTime _date; // 現在日時
   String _dateLabel = '日付を選択してください';
-  // 日付選択ボタン押した時のイベント
+
+  // 初期値は現時点で登録されているデータを格納する
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      _goalInput = widget.stepMapData[FirebaseDataMap.goal];
+      _stepInput = widget.stepMapData[FirebaseDataMap.step];
+      _stepSize = widget.stepMapData[FirebaseDataMap.stepSize];
+      _diffucultyLevel = widget.stepMapData[FirebaseDataMap.difficultyLevel];
+      _date = widget.stepMapData[FirebaseDataMap.targetDate].toDate();
+      _dateLabel = _date.toString();
+    });
+  }
+
+  // 日付選択ボタンを押した時のイベント
   void onPressedRaisedButton() async {
     final DateTime picked = await showDatePicker(
         context: context,
@@ -48,15 +64,6 @@ class _PopupEditDialogState extends State<PopupEditDialog> {
   @override
   Widget build(BuildContext context) {
     print('loggedInUser is ${widget.loggedInUser}');
-    setState(() {
-      _goalInput = widget.stepMapData[FirebaseDataMap.goal];
-      _stepInput = widget.stepMapData[FirebaseDataMap.step];
-      _stepSize = widget.stepMapData[FirebaseDataMap.stepSize];
-      _diffucultyLevel = widget.stepMapData[FirebaseDataMap.difficultyLevel];
-      _date = widget.stepMapData[FirebaseDataMap.targetDate].toDate();
-
-      _dateLabel = _date.toString();
-    });
 
     return Dialog(
       backgroundColor: Colors.transparent,
@@ -76,7 +83,7 @@ class _PopupEditDialogState extends State<PopupEditDialog> {
             child: Column(
               children: [
                 Text(
-                  widget.stepMapData["step"],
+                  "Stepを編集する",
                   style: TextStyle(fontSize: 16),
                   textAlign: TextAlign.center,
                 ),
@@ -125,7 +132,6 @@ class _PopupEditDialogState extends State<PopupEditDialog> {
                   onChanged: (value) {
                     setState(
                       () {
-                        // print(value);
                         _stepSize = value;
                         print(_stepSize);
                       },
@@ -145,14 +151,14 @@ class _PopupEditDialogState extends State<PopupEditDialog> {
                       onPressed: () {
                         setState(() {
                           _firebasehelper.editStepItems(
-                            goalItem: "make a cake",
+                            goalItem: _goalInput,
                             stepItem: _stepInput,
                             stepSize: _stepSize,
                             targetDate: _date,
-                            // difficultyLevel: _diffucultyLevel,
-                            difficultyLevel: 50,
+                            difficultyLevel: _diffucultyLevel,
+                            // difficultyLevel: 50,
                             loggedInUser: widget.loggedInUser,
-                            documentId: widget.documentId,
+                            documentId: widget.stepMapData["documentId"],
                           );
                         });
                         Navigator.of(context).pop();
