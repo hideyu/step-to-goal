@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:step_to_goal/components/edit_item_dialog.dart';
 import 'package:step_to_goal/utils/firebase_helper.dart';
 import 'package:timeline_tile/timeline_tile.dart';
@@ -19,6 +20,9 @@ class _StepperTimelineTileState extends State<StepperTimelineTile> {
 
   @override
   Widget build(BuildContext context) {
+    String formattedDate =
+        DateFormat('yyyy/MM/dd').format(widget.stepItem["targetDate"].toDate());
+
     return Container(
       // color: Colors.blue.shade50,
       child: Material(
@@ -29,7 +33,7 @@ class _StepperTimelineTileState extends State<StepperTimelineTile> {
           onTap: () {
             showDialog(
               context: context,
-              barrierDismissible: false,
+              // barrierDismissible: false,
               builder: (BuildContext dialogContext) {
                 return AlertDialog(
                   title: Text(
@@ -39,8 +43,8 @@ class _StepperTimelineTileState extends State<StepperTimelineTile> {
                   actions: <Widget>[
                     TextButton(
                       child: widget.stepItem["isDone"]
-                          ? Text('Done')
-                          : Text('Doneじゃない'),
+                          ? Text('Doneじゃない')
+                          : Text('Done'),
                       onPressed: () {
                         _firebaseHelper.toggleIsDone(
                             isDoneNow: widget.stepItem["isDone"],
@@ -60,26 +64,44 @@ class _StepperTimelineTileState extends State<StepperTimelineTile> {
                             return PopupEditDialog(
                               stepMapData: widget.stepItem,
                               loggedInUser: widget.user,
-                              // TODO: ログイン情報を渡す
-                              // loggedInUser: widget.loggedInUser,
                             );
-
-                            // return AlertDialog(
-                            //   title: Text(
-                            //     "ここに編集用のpopupを作成する",
-                            //     style: TextStyle(fontSize: 12),
-                            //   ),
-                            //   actions: <Widget>[
-                            //     TextButton(
-                            //       child: Text(
-                            //         'OK',
-                            //       ),
-                            //       onPressed: () {
-                            //         Navigator.pop(dialogContext);
-                            //       },
-                            //     ),
-                            //   ],
-                            // );
+                          },
+                        );
+                      },
+                    ),
+                    TextButton(
+                      child: Text(
+                        'Delete',
+                      ),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          // barrierDismissible: false,
+                          builder: (BuildContext dialogContext) {
+                            return AlertDialog(
+                              title: Text("本当に削除しますか？"),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    _firebaseHelper.deleteStepItems(
+                                        documentId:
+                                            widget.stepItem["documentId"],
+                                        loggedInUser: widget.user);
+                                    print("deleted!!!");
+                                    int count = 0;
+                                    Navigator.popUntil(
+                                        dialogContext, (_) => count++ >= 2);
+                                  },
+                                  child: Text("削除"),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(dialogContext);
+                                  },
+                                  child: Text("削除しない"),
+                                )
+                              ],
+                            );
                           },
                         );
                       },
@@ -91,7 +113,7 @@ class _StepperTimelineTileState extends State<StepperTimelineTile> {
           },
           child: TimelineTile(
             indicatorStyle: IndicatorStyle(
-              color: Colors.blue,
+              color: Colors.red,
               width: 20,
             ),
             endChild: Row(
@@ -102,7 +124,7 @@ class _StepperTimelineTileState extends State<StepperTimelineTile> {
                 ),
                 // widget.stepText,
                 Text(
-                    "${widget.stepItem['step']}, ${widget.stepItem['isDone']}"),
+                    "${widget.stepItem['step']}, ${widget.stepItem['isDone']}, $formattedDate. ${widget.stepItem['user']}"),
               ],
             ),
             // endChild: Container(
@@ -116,123 +138,3 @@ class _StepperTimelineTileState extends State<StepperTimelineTile> {
     );
   }
 }
-
-// class StepperTimelineTile extends StatefulWidget {
-//   final Widget stepText;
-//   final String documentId;
-//   final bool isDoneNow;
-//   final Map<String, dynamic> stepMapData;
-//   final User loggedInUser;
-
-//   const StepperTimelineTile({
-//     @required this.stepText,
-//     @required this.documentId,
-//     @required this.isDoneNow,
-//     @required this.stepMapData,
-//     @required this.loggedInUser,
-//   });
-
-//   @override
-//   _StepperTimelineTileState createState() => _StepperTimelineTileState();
-// }
-
-// class _StepperTimelineTileState extends State<StepperTimelineTile> {
-//   FirebaseHelper _firebaseHelper = FirebaseHelper();
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       // color: Colors.blue.shade50,
-//       child: Material(
-//         type: MaterialType.transparency,
-//         child: InkWell(
-//           highlightColor: Colors.redAccent,
-//           splashColor: Colors.red,
-//           onTap: () {
-//             // print("hogehoge");
-//             showDialog(
-//               context: context,
-//               barrierDismissible: false,
-//               builder: (BuildContext dialogContext) {
-//                 final testId = widget.documentId;
-//                 return AlertDialog(
-//                   title: Text(
-//                     testId,
-//                     style: TextStyle(fontSize: 12),
-//                   ),
-//                   actions: <Widget>[
-//                     TextButton(
-//                       child: Text(
-//                         widget.isDoneNow ? 'Doneじゃない' : 'Done',
-//                       ),
-//                       onPressed: () {
-//                         _firebaseHelper.toggleIsDone(
-//                             isDoneNow: widget.isDoneNow,
-//                             documentId: widget.documentId);
-//                         Navigator.pop(dialogContext);
-//                       },
-//                     ),
-//                     TextButton(
-//                       child: Text(
-//                         'Edit',
-//                       ),
-//                       onPressed: () {
-//                         showDialog(
-//                           context: context,
-//                           barrierDismissible: false,
-//                           builder: (BuildContext dialogContext) {
-//                             return PopupEditDialog(
-//                               documentId: widget.documentId,
-//                               stepMapData: widget.stepMapData,
-//                               loggedInUser: widget.loggedInUser,
-//                             );
-
-//                             // return AlertDialog(
-//                             //   title: Text(
-//                             //     "ここに編集用のpopupを作成する",
-//                             //     style: TextStyle(fontSize: 12),
-//                             //   ),
-//                             //   actions: <Widget>[
-//                             //     TextButton(
-//                             //       child: Text(
-//                             //         'OK',
-//                             //       ),
-//                             //       onPressed: () {
-//                             //         Navigator.pop(dialogContext);
-//                             //       },
-//                             //     ),
-//                             //   ],
-//                             // );
-//                           },
-//                         );
-//                       },
-//                     ),
-//                   ],
-//                 );
-//               },
-//             );
-//           },
-//           child: TimelineTile(
-//             indicatorStyle: IndicatorStyle(
-//               color: Colors.blue,
-//               width: 20,
-//             ),
-//             endChild: Row(
-//               children: [
-//                 SizedBox(
-//                   width: 10,
-//                   height: 50,
-//                 ),
-//                 widget.stepText,
-//               ],
-//             ),
-//             // endChild: Container(
-//             //   height: 85.0,
-//             //   child: Text('hogehgoe'),
-//             //   color: Colors.green,
-//             // ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }

@@ -1,20 +1,34 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:riverpod/riverpod.dart';
+import 'package:step_to_goal/utils/user_repository.dart';
 
 // ******************************************
 // Repository: データをFirestoreから出し入れする
 // ******************************************
 // StepListプロバイダー
 final stepListStreamProvider = StreamProvider.autoDispose((_) {
+  // TODO: ログインユーザーのデータのみを取得する
+  User loggedInUser;
+  try {
+    User currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      loggedInUser = currentUser;
+    }
+  } catch (e) {
+    // TODO: エラーハンドリング
+    print(e);
+  }
+
   CollectionReference ref = FirebaseFirestore.instance.collection('steps');
-  return ref.snapshots().map((snapshot) => snapshot.docs.map(
+  Query query = ref.where('user', isEqualTo: loggedInUser.email); // クエリを追加
+  return query.snapshots().map((snapshot) => snapshot.docs.map(
         (doc) {
           // documentIdもMapの変数として格納する{documentId: xxx, isDone: false, ...}
           // TODO: 他にもっといいやり方があるかも？
           String documentId = doc.id;
           Map<String, dynamic> documentMap = doc.data();
           documentMap["documentId"] = documentId;
-          // print(fuga.runtimeType);
           return documentMap;
         },
       )
@@ -31,23 +45,14 @@ final stepListProvider = Provider.autoDispose((ref) async {
   // Future<List<Member>>なので、値を取得できるまで待つ。
   final stepList = await futureStepList;
 
-  // TODO: ここで必要あればデータ加工
-  // // 部署名順、次に氏名順に並べる。
-  // stepList.sort((a, b) {
-  //   if (a.division == b.division) {
-  //     return a.name.compareTo(b.name);
-  //   } else {
-  //     return a.division.compareTo(b.division);
-  //   }
-  // });
-  // // 部署1 - メンバー多のデータに変換する
-  // final divisions = List<Division>();
-  // for (final e in memberList) {
-  //   if (divisions.isEmpty || divisions.last.division != e.division) {
-  //     divisions.add(Division(division: e.division, names: []));
-  //   }
-  //   divisions.last.names.add(e.name);
-  // }
+  // TODO: 日付順にソート
+  // 該当するユーザーのデータのみ抽出
+  stepList.sort((a, b) {
+    var aDate = a['targetDate']; //before -> var adate = a.expiry;
+    var bDate = b['targetDate']; //var bdate = b.expiry;
+    return -bDate.compareTo(aDate);
+  });
+
   return stepList;
   // AsyncSnapshot<List<Map<String, dynamic>>>(ConnectionState.done, [{isDone: false, targetDate: Timestamp(seconds=1615993200, nanoseconds=0), stepSize: 0, goal: make a cake, difficultyLevel: 50, step: do something, user: hogehoge@hog.com},{...}])
 });

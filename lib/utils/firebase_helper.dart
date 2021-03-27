@@ -20,47 +20,6 @@ class FirebaseHelper {
   final _firestore = FirebaseFirestore.instance;
   User loggedInUser;
 
-  // 2. Userがsigninしているかどうかを確認する処理
-  // TODO: dynamicでいいか不明
-  dynamic getCurrentUser() {
-    try {
-      final user = _auth.currentUser;
-      // final user = await _auth.currentUser();
-      if (user != null) {
-        loggedInUser = user;
-        print(loggedInUser.email);
-        return loggedInUser;
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  // 3. Firestoreのデータ（Stream）を取得する処理
-  Stream getStepItemSnapshot() {
-    final stepItemSnapshot = _firestore.collection('steps').snapshots();
-    return stepItemSnapshot;
-  }
-
-  // 3. Firestoreのデータ（Future）を取得する処理
-  dynamic getCollections(collection) async {
-    final itemCollection = await _firestore.collection(collection).get();
-    // itemCollectionにはFuture<Querysnapshot>が入る
-    // for (var item in itemCollection.docs) {
-    //   // itemCollection.docsにはDocumentSnapshotのListが格納されている
-    //   print(item.data()); // todoitem.data()で各データにアクセスできる
-    // }
-    print(itemCollection.docs.length);
-    return itemCollection;
-  }
-
-  Future<int> getCollectionLength(collection) async {
-    final itemCollection = await _firestore
-        .collection(collection)
-        .get(); // todoItemsにはFuture<Querysnapshot>が入る
-    return itemCollection.docs.length;
-  }
-
   // 4. Firestoreにデータ（steps）を登録する処理
   void addStepItems({
     String goalItem,
@@ -85,7 +44,7 @@ class FirebaseHelper {
     );
   }
 
-  // 4. Firestoreにデータ（steps）を編集する処理
+  // 4. Firestoreのデータ（steps）を編集する処理
   void editStepItems({
     String goalItem,
     String stepItem,
@@ -108,6 +67,17 @@ class FirebaseHelper {
         FirebaseDataMap.user: loggedInUser.email,
       },
     );
+  }
+
+  // 4. Firestoreのデータ（steps）を削除する処理
+  void deleteStepItems({
+    User loggedInUser,
+    String documentId,
+  }) async {
+    print('delete StepItems is called');
+    print('loggedInUser is $loggedInUser');
+    // TODO: userのバリデーション
+    _firestore.collection('steps').doc(documentId).delete();
   }
 
   // 5. Firestoreにデータ（goals）を登録する処理
@@ -147,10 +117,4 @@ class FirebaseHelper {
   // for (var itemReference in itemReferences.docs) {
   //   print(itemReference.reference.id);
   // }
-  // TODO: 型を調べてdynamicをなおす
-  dynamic dataFetch(documentId) async {
-    final document = await _firestore.collection("steps").doc(documentId).get();
-    print(document.data()["step"]);
-    return document.data();
-  }
 }

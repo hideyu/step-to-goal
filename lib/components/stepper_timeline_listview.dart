@@ -21,10 +21,10 @@ class StepperTimelineListView extends HookWidget {
       print(snapshotStepList.data.runtimeType);
 
       List<Widget> stepListWidgets = [
-        Divider(),
-        Text("デバッグ"),
-        Text("${snapshotUser.data}"),
-        Divider(),
+        // Divider(),
+        // Text("デバッグ"),
+        // Text("${snapshotUser.data}"),
+        // Divider(),
       ];
 
       // TODO; loggedInUserのdataだけを取得する

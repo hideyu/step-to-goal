@@ -1,24 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:step_to_goal/components/register_item_dialog.dart';
 import 'package:step_to_goal/components/stepper_timeline_listview.dart';
 import 'package:step_to_goal/utils/firebase_helper.dart';
-import 'package:step_to_goal/utils/step_repository.dart';
 import 'package:step_to_goal/utils/user_repository.dart';
 
 class StepperScreen extends HookWidget {
   static String id = 'stepper_screen';
 
-  // FirebaseHelper _firebaseHelper = FirebaseHelper();
-  // final _firestore = FirebaseFirestore.instance;
-  // User _loggedInUser;
+  // TODO: プロバイダに移す
   List<Widget> tablist = [Text('Tab1'), Text('Tab2'), Text('Tab3')];
 
   // 最初にログインしているユーザーを取得
-  // TODO: ログインしてない時はwelcomeにリダイレクト
   // @override
   // void initState() {
   //   super.initState();
@@ -28,7 +25,7 @@ class StepperScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
     // プロバイダーからUser情報を取得
-    // TODO: ログインしてなかったらwelcomeスクリーンにリダイレクト
+    // TODO: ログインしてない時はwelcomeにリダイレクト
     final futureAuth = useProvider(authProvider);
     final snapshotAuth = useFuture(futureAuth, initialData: null);
     final futureUser = useProvider(userProvider);
@@ -53,13 +50,7 @@ class StepperScreen extends HookWidget {
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () async {
-              // final itemReferences = await _firestore.collection("steps").get();
-              // List<String> documentIdList = [];
-              // for (var itemReference in itemReferences.docs) {
-              //   // print(itemReference.reference.id);
-              //   documentIdList.add(itemReference.reference.id);
-              //   print(documentIdList);
-              // }
+              print("debug is bellow...");
 
               // _firebaseHelper.dataFetch('1hN0tgOpSetKuT77IrRl');
 
@@ -73,15 +64,14 @@ class StepperScreen extends HookWidget {
               //     new Map<String, dynamic>.from(debugVariable.data());
               // print(mapData);
 
-              // print("debug is bellow...");
-              // showDialog(
-              //   context: context,
-              //   builder: (_) {
-              //     return PopupRegisterDialog(
-              //       loggedInUser: _loggedInUser,
-              //     );
-              //   },
-              // );
+              showDialog(
+                context: context,
+                builder: (_) {
+                  return PopupRegisterDialog(
+                    loggedInUser: snapshotUser.data,
+                  );
+                },
+              );
             },
           ),
         ));
