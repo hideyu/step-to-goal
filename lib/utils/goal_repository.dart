@@ -5,8 +5,8 @@ import 'package:riverpod/riverpod.dart';
 // ******************************************
 // Repository: データをFirestoreから出し入れする
 // ******************************************
-// StepListプロバイダー
-final stepListStreamProvider = StreamProvider.autoDispose((_) {
+// GoalListプロバイダー
+final goalListStreamProvider = StreamProvider.autoDispose((_) {
   // TODO: ログインユーザーのデータを取得するときにプロバイダを使う？
   User loggedInUser;
   try {
@@ -19,9 +19,8 @@ final stepListStreamProvider = StreamProvider.autoDispose((_) {
     print(e);
   }
 
-  // TODO: 該当するゴールのやつだけ取得する
-  CollectionReference ref = FirebaseFirestore.instance.collection('steps');
-  Query query = ref.where('user', isEqualTo: loggedInUser.email); // クエリを追加
+  CollectionReference ref = FirebaseFirestore.instance.collection('goals');
+  Query query = ref.where('goalUser', isEqualTo: loggedInUser.email); // クエリを追加
   return query.snapshots().map((snapshot) => snapshot.docs.map(
         (doc) {
           // documentIdもMapの変数として格納する{documentId: xxx, isDone: false, ...}
@@ -39,18 +38,17 @@ final stepListStreamProvider = StreamProvider.autoDispose((_) {
 // ***************************************************************
 // Presenter: Viewを制御する（データを加工する場合はここで加工して出力する）
 // ***************************************************************
-final stepListProvider = Provider.autoDispose((ref) async {
+final goalListProvider = Provider.autoDispose((ref) async {
   // Repositoryからデータを取得する。最新の情報をwatchする。
-  final futureStepList = ref.watch(stepListStreamProvider.last);
+  final futureGoalList = ref.watch(goalListStreamProvider.last);
   // Future<List<Member>>なので、値を取得できるまで待つ。
-  final stepList = await futureStepList;
+  final goalList = await futureGoalList;
 
-  stepList.sort((a, b) {
-    var aDate = a['targetDate']; //before -> var adate = a.expiry;
-    var bDate = b['targetDate']; //var bdate = b.expiry;
+  goalList.sort((a, b) {
+    var aDate = a['goalDate']; //before -> var adate = a.expiry;
+    var bDate = b['goalDate']; //var bdate = b.expiry;
     return -bDate.compareTo(aDate);
   });
 
-  return stepList;
-  // AsyncSnapshot<List<Map<String, dynamic>>>(ConnectionState.done, [{isDone: false, targetDate: Timestamp(seconds=1615993200, nanoseconds=0), stepSize: 0, goal: make a cake, difficultyLevel: 50, step: do something, user: hogehoge@hog.com},{...}])
+  return goalList;
 });

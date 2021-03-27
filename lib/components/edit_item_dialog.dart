@@ -1,17 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:step_to_goal/utils/firebase_helper.dart';
 
 class PopupEditDialog extends StatefulWidget {
-  // 親からstepデータとuserデータを受け取る
   final Map<String, dynamic> stepMapData;
-  final User loggedInUser;
-
-  const PopupEditDialog({
-    @required this.loggedInUser,
-    @required this.stepMapData,
-  });
+  PopupEditDialog({@required this.stepMapData});
 
   @override
   _PopupEditDialogState createState() => _PopupEditDialogState();
@@ -20,20 +13,30 @@ class PopupEditDialog extends StatefulWidget {
 class _PopupEditDialogState extends State<PopupEditDialog> {
   FirebaseHelper _firebasehelper = FirebaseHelper();
 
-  // Input Field用の変数
-  // TODO: リファクター
+  // TODO: リファクター（プロバイダー使いたいけどよくわからない）
+  // *************************
+  // Input Field用の変数(state)
+  // *************************
   String _goalInput; // ゴールの内容
   String _stepInput; // ステップの内容
   int _stepSize; // ステップのレベル（大中小）
   int _diffucultyLevel; // ステップのスコア（0~100）
   DateTime _date; // 現在日時
   String _dateLabel = '日付を選択してください';
+  User loggedInUser; // ログインユーザー取得用
 
+  // ***************************************
+  // initState()
+  // ログインユーザーの取得（本当はプロバイダ使う）
   // 初期値は現時点で登録されているデータを格納する
+  // ***************************************
   @override
   void initState() {
     super.initState();
+
     setState(() {
+      loggedInUser = FirebaseAuth.instance.currentUser;
+
       _goalInput = widget.stepMapData[FirebaseDataMap.goal];
       _stepInput = widget.stepMapData[FirebaseDataMap.step];
       _stepSize = widget.stepMapData[FirebaseDataMap.stepSize];
@@ -43,14 +46,20 @@ class _PopupEditDialogState extends State<PopupEditDialog> {
     });
   }
 
+  // ***************************************
+  // 自前の関数定義
   // 日付選択ボタンを押した時のイベント
+  // ***************************************
   void onPressedRaisedButton() async {
     final DateTime picked = await showDatePicker(
-        context: context,
-        initialDate: _date,
-        firstDate: new DateTime(2021),
-        lastDate: new DateTime.now()
-            .add(new Duration(days: 360))); // TODO: より後年度の値も入れれるようにする
+      context: context,
+      initialDate: widget.stepMapData["targetDate"].toDate(),
+      firstDate: new DateTime(2021),
+      lastDate: new DateTime.now().add(
+        new Duration(days: 360),
+      ),
+    );
+    // TODO: より後年度の値も入れれるようにする
 
     if (picked != null) {
       // 日時の反映
@@ -63,7 +72,8 @@ class _PopupEditDialogState extends State<PopupEditDialog> {
 
   @override
   Widget build(BuildContext context) {
-    print('loggedInUser is ${widget.loggedInUser}');
+    // final stateForm = useProvider(formInputProvider.state);
+    // final formInput = useProvider(formInputProvider);
 
     return Dialog(
       backgroundColor: Colors.transparent,
@@ -157,11 +167,12 @@ class _PopupEditDialogState extends State<PopupEditDialog> {
                             targetDate: _date,
                             difficultyLevel: _diffucultyLevel,
                             // difficultyLevel: 50,
-                            loggedInUser: widget.loggedInUser,
+                            loggedInUser: loggedInUser,
                             documentId: widget.stepMapData["documentId"],
                           );
                         });
-                        Navigator.of(context).pop();
+                        int count = 0;
+                        Navigator.popUntil(context, (_) => count++ >= 2);
                       },
                     ),
                   ],

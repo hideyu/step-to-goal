@@ -16,7 +16,7 @@ class FirebaseDataMap {
 }
 
 class FirebaseHelper {
-  final _auth = FirebaseAuth.instance;
+  // final _auth = FirebaseAuth.instance;
   final _firestore = FirebaseFirestore.instance;
   User loggedInUser;
 
@@ -80,6 +80,20 @@ class FirebaseHelper {
     _firestore.collection('steps').doc(documentId).delete();
   }
 
+  // 6. StepのisDoneを切り替える
+  void toggleIsDone({String documentId, bool isDoneNow}) {
+    try {
+      final itemUpdate = _firestore
+          .collection("steps")
+          .doc(documentId)
+          .update({'isDone': isDoneNow ? false : true});
+      print(itemUpdate);
+    } catch (e) {
+      // TODO: エラーハンドリング
+      print(e);
+    }
+  }
+
   // 5. Firestoreにデータ（goals）を登録する処理
   void addGoalItems({
     String goalItem,
@@ -96,20 +110,6 @@ class FirebaseHelper {
         FirebaseDataMap.goalUser: loggedInUser.email,
       },
     );
-  }
-
-  // 6. StepのisDoneを切り替える
-  void toggleIsDone({String documentId, bool isDoneNow}) {
-    try {
-      final itemUpdate = _firestore
-          .collection("steps")
-          .doc(documentId)
-          .update({'isDone': isDoneNow ? false : true});
-      print(itemUpdate);
-    } catch (e) {
-      // TODO: エラーハンドリング
-      print(e);
-    }
   }
 
   // NOTE: documentIDの取得

@@ -2,20 +2,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:step_to_goal/utils/firebase_helper.dart';
 
-class PopupRegisterDialog extends StatefulWidget {
+class PopupRegisterGoalDialog extends StatefulWidget {
   final User loggedInUser;
-  const PopupRegisterDialog({this.loggedInUser});
+  const PopupRegisterGoalDialog({this.loggedInUser});
 
   @override
-  _PopupRegisterDialogState createState() => _PopupRegisterDialogState();
+  _PopupRegisterGoalDialogState createState() =>
+      _PopupRegisterGoalDialogState();
 }
 
-class _PopupRegisterDialogState extends State<PopupRegisterDialog> {
+class _PopupRegisterGoalDialogState extends State<PopupRegisterGoalDialog> {
   FirebaseHelper _firebasehelper = FirebaseHelper();
   String _goalInput; // ゴールの内容
-  String _stepInput; // ステップの内容
-  int _stepSize; // ステップのレベル（大中小）
-  int _diffucultyLevel; // ステップのスコア（0~100）
   DateTime _date = new DateTime.now(); // 現在日時
 
   String _dateLabel = '日付を選択してください';
@@ -25,8 +23,8 @@ class _PopupRegisterDialogState extends State<PopupRegisterDialog> {
         context: context,
         initialDate: _date,
         firstDate: new DateTime(2021),
-        lastDate: new DateTime.now()
-            .add(new Duration(days: 360))); // TODO: より後年度の値も入れれるようにする
+        lastDate: new DateTime.now().add(new Duration(days: 360)));
+    // TODO: より後年度の値も入れれるようにする
 
     if (picked != null) {
       // 日時の反映
@@ -64,12 +62,12 @@ class _PopupRegisterDialogState extends State<PopupRegisterDialog> {
                 TextField(
                   decoration: InputDecoration(
                     icon: Icon(Icons.account_circle),
-                    labelText: 'New Step',
+                    labelText: 'New Goal',
                   ),
                   onChanged: (value) {
                     setState(() {
-                      _stepInput = value;
-                      print(_stepInput);
+                      _goalInput = value;
+                      print(_goalInput);
                     });
                   },
                 ),
@@ -85,46 +83,13 @@ class _PopupRegisterDialogState extends State<PopupRegisterDialog> {
                     ),
                   ],
                 ),
-                DropdownButton(
-                  isExpanded: true,
-                  value: _stepSize,
-                  hint: Text("タスクのレベルを選択してね"),
-                  items: [
-                    DropdownMenuItem(
-                      child: Text('大テーマ'),
-                      value: 0,
-                    ),
-                    DropdownMenuItem(
-                      child: Text('中間目標'),
-                      value: 1,
-                    ),
-                    DropdownMenuItem(
-                      child: Text('小タスク'),
-                      value: 2,
-                    )
-                  ],
-                  onChanged: (value) {
-                    setState(
-                      () {
-                        // print(value);
-                        _stepSize = value;
-                        print(_stepSize);
-                      },
-                    );
-                  },
-                ),
                 TextButton(
-                  child: Text('新しいステップを登録する'),
+                  child: Text('新しいゴールを登録する'),
                   onPressed: () {
                     setState(() {
-                      print("hogehoge");
-                      _firebasehelper.addStepItems(
-                        goalItem: "make a cake",
-                        stepItem: _stepInput,
-                        stepSize: _stepSize,
-                        targetDate: _date,
-                        // difficultyLevel: _diffucultyLevel,
-                        difficultyLevel: 50,
+                      _firebasehelper.addGoalItems(
+                        goalItem: _goalInput,
+                        goalDate: _date,
                         loggedInUser: widget.loggedInUser,
                       );
                     });
