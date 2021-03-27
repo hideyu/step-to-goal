@@ -44,8 +44,11 @@ class StepperScreen extends HookWidget {
     // *******************************************
     List<Widget> tabList = [];
     List<Widget> tabBarViewList = [];
+    List<String> tabTitleList = [];
+    // TODO: TabControllerのindexからTabのtextの持ってき方がわかりません
     snapshotGoal.data.forEach((goalMap) {
       tabList.add(Text('${goalMap['goalTitle']}'));
+      tabTitleList.add(goalMap['goalTitle']);
 
       final theGoal = goalMap["goalTitle"];
       final filteredStepList = snapshotStepList.data
@@ -60,43 +63,51 @@ class StepperScreen extends HookWidget {
     // TODO: 読み込み中のくるくる
     return DefaultTabController(
         length: snapshotGoal.data.length,
-        child: Scaffold(
-          appBar: PreferredSize(
-            preferredSize: Size.fromHeight(70.0),
-            child: AppBar(
-                title: Text("Step To Goal v2"),
-                actions: <Widget>[
-                  IconButton(
-                      icon: Icon(Icons.add),
-                      onPressed: () {
-                        print("hogehgoe");
-                        showDialog(
-                          context: context,
-                          builder: (_) {
-                            return PopupRegisterGoalDialog(
-                              loggedInUser: snapshotUser.data,
+        child: Builder(
+          builder: (BuildContext context) {
+            final TabController tabController =
+                DefaultTabController.of(context);
+            return Scaffold(
+              appBar: PreferredSize(
+                preferredSize: Size.fromHeight(70.0),
+                child: AppBar(
+                    title: Text("Step To Goal v2"),
+                    actions: <Widget>[
+                      IconButton(
+                          icon: Icon(Icons.add),
+                          onPressed: () {
+                            // print(
+                            //     "${tabController.index}: ${tabTitleList[tabController.index]}");
+                            showDialog(
+                              context: context,
+                              builder: (_) {
+                                return PopupRegisterGoalDialog(
+                                  loggedInUser: snapshotUser.data,
+                                );
+                              },
                             );
-                          },
-                        );
-                      })
-                ],
-                bottom: TabBar(tabs: tabList)),
-          ),
-          body: TabBarView(
-            children: tabBarViewList,
-          ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () async {
-              showDialog(
-                context: context,
-                builder: (_) {
-                  return PopupRegisterDialog(
-                    loggedInUser: snapshotUser.data,
+                          })
+                    ],
+                    bottom: TabBar(tabs: tabList)),
+              ),
+              body: TabBarView(
+                children: tabBarViewList,
+              ),
+              floatingActionButton: FloatingActionButton(
+                onPressed: () async {
+                  showDialog(
+                    context: context,
+                    builder: (_) {
+                      return PopupRegisterDialog(
+                        loggedInUser: snapshotUser.data,
+                        goalInThisTab: tabTitleList[tabController.index],
+                      );
+                    },
                   );
                 },
-              );
-            },
-          ),
+              ),
+            );
+          },
         ));
   }
 }

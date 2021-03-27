@@ -4,7 +4,9 @@ import 'package:step_to_goal/utils/firebase_helper.dart';
 
 class PopupRegisterDialog extends StatefulWidget {
   final User loggedInUser;
-  const PopupRegisterDialog({this.loggedInUser});
+  final String goalInThisTab;
+  const PopupRegisterDialog(
+      {@required this.loggedInUser, @required this.goalInThisTab});
 
   @override
   _PopupRegisterDialogState createState() => _PopupRegisterDialogState();
@@ -12,7 +14,7 @@ class PopupRegisterDialog extends StatefulWidget {
 
 class _PopupRegisterDialogState extends State<PopupRegisterDialog> {
   FirebaseHelper _firebasehelper = FirebaseHelper();
-  String _goalInput; // ゴールの内容
+  // String _goalInput; // ゴールの内容
   String _stepInput; // ステップの内容
   int _stepSize; // ステップのレベル（大中小）
   // int _diffucultyLevel; // ステップのスコア（0~100）
@@ -106,7 +108,6 @@ class _PopupRegisterDialogState extends State<PopupRegisterDialog> {
                   onChanged: (value) {
                     setState(
                       () {
-                        // print(value);
                         _stepSize = value;
                         print(_stepSize);
                       },
@@ -118,8 +119,9 @@ class _PopupRegisterDialogState extends State<PopupRegisterDialog> {
                   onPressed: () {
                     setState(() {
                       print("hogehoge");
+
                       _firebasehelper.addStepItems(
-                        goalItem: _goalInput,
+                        goalItem: widget.goalInThisTab,
                         stepItem: _stepInput,
                         stepSize: _stepSize,
                         targetDate: _date,
