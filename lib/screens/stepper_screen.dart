@@ -11,13 +11,6 @@ import 'package:step_to_goal/utils/user_repository.dart';
 class StepperScreen extends HookWidget {
   static String id = 'stepper_screen';
 
-  // 最初にログインしているユーザーを取得
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _loggedInUser = _firebaseHelper.getCurrentUser();
-  // }
-
   @override
   Widget build(BuildContext context) {
     // FirebaseHelper _firebasehelper = FirebaseHelper();
@@ -47,10 +40,10 @@ class StepperScreen extends HookWidget {
     List<String> tabTitleList = [];
     // TODO: TabControllerのindexからTabのtextの持ってき方がわかりません
     snapshotGoal.data.forEach((goalMap) {
-      tabList.add(Text('${goalMap['goalTitle']}'));
-      tabTitleList.add(goalMap['goalTitle']);
+      tabList.add(Text('${goalMap['goal']}'));
+      tabTitleList.add(goalMap['goal']);
 
-      final theGoal = goalMap["goalTitle"];
+      final theGoal = goalMap["goal"];
       final filteredStepList = snapshotStepList.data
           .where((stepMap) => stepMap["goal"] == theGoal)
           .toList();
@@ -88,7 +81,10 @@ class StepperScreen extends HookWidget {
                             );
                           })
                     ],
-                    bottom: TabBar(tabs: tabList)),
+                    bottom: TabBar(
+                      tabs: tabList,
+                      isScrollable: true,
+                    )),
               ),
               body: TabBarView(
                 children: tabBarViewList,

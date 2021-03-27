@@ -2,10 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FirebaseDataMap {
-  static const goalTitle = 'goalTitle';
-  static const goalDate = 'goalDate';
-  static const goalIsDone = 'goalIsDone';
-  static const goalUser = 'goalUser';
+  // static const goalTitle = 'goalTitle';
+  // static const goalDate = 'goalDate';
+  // static const goalIsDone = 'goalIsDone';
+  // static const goalUser = 'goalUser';
   static const step = 'step';
   static const stepSize = 'stepSize';
   static const difficultyLevel = 'difficultyLevel';
@@ -94,23 +94,23 @@ class FirebaseHelper {
     }
   }
 
-  // 5. Firestoreにデータ（goals）を登録する処理
-  void addGoalItems({
-    String goalItem,
-    DateTime goalDate,
-    User loggedInUser,
-  }) async {
-    print('addGoalItems is called');
-    print('loggedInUser is $loggedInUser');
-    _firestore.collection('goals').add(
-      {
-        FirebaseDataMap.goalTitle: goalItem,
-        FirebaseDataMap.goalDate: Timestamp.fromDate(goalDate),
-        FirebaseDataMap.goalIsDone: false,
-        FirebaseDataMap.goalUser: loggedInUser.email,
-      },
-    );
-  }
+  // // 5. Firestoreにデータ（goals）を登録する処理
+  // void addGoalItems({
+  //   String goalItem,
+  //   DateTime goalDate,
+  //   User loggedInUser,
+  // }) async {
+  //   print('addGoalItems is called');
+  //   print('loggedInUser is $loggedInUser');
+  //   _firestore.collection('goals').add(
+  //     {
+  //       FirebaseDataMap.goalTitle: goalItem,
+  //       FirebaseDataMap.goalDate: Timestamp.fromDate(goalDate),
+  //       FirebaseDataMap.goalIsDone: false,
+  //       FirebaseDataMap.goalUser: loggedInUser.email,
+  //     },
+  //   );
+  // }
 
   // NOTE: documentIDの取得
   // final itemReferences = await _firestore.collection("steps").get();

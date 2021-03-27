@@ -87,11 +87,21 @@ class _PopupRegisterGoalDialogState extends State<PopupRegisterGoalDialog> {
                   child: Text('新しいゴールを登録する'),
                   onPressed: () {
                     setState(() {
-                      _firebasehelper.addGoalItems(
+                      _firebasehelper.addStepItems(
                         goalItem: _goalInput,
-                        goalDate: _date,
+                        stepItem: _goalInput,
+                        stepSize: 4,
+                        targetDate: _date,
+                        // difficultyLevel: _diffucultyLevel,
+                        difficultyLevel: 100,
                         loggedInUser: widget.loggedInUser,
                       );
+
+                      // _firebasehelper.addGoalItems(
+                      //   goalItem: _goalInput,
+                      //   goalDate: _date,
+                      //   loggedInUser: widget.loggedInUser,
+                      // );
                     });
                     Navigator.of(context).pop();
                   },

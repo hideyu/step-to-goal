@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:step_to_goal/components/stepper_timeline_tile.dart';
+import 'package:step_to_goal/utils/firebase_helper.dart';
 
 class StepperTimelineListView extends HookWidget {
   final List stepMapList;
@@ -26,6 +27,8 @@ class StepperTimelineListView extends HookWidget {
         );
         stepListWidgets.add(stepItemWidget);
       }
+      // TODO: ゴール分のステッパーを追加
+
       return ListView(
         children: stepListWidgets,
       );
