@@ -23,6 +23,7 @@ class _PopupEditDialogState extends State<PopupEditDialog> {
   int _diffucultyLevel; // ステップのスコア（0~100）
   DateTime _date; // 現在日時
   String _dateLabel = '日付を選択してください';
+  String _descriptionInput;
   User loggedInUser; // ログインユーザー取得用
 
   // ***************************************
@@ -41,6 +42,7 @@ class _PopupEditDialogState extends State<PopupEditDialog> {
       _stepInput = widget.stepMapData[FirebaseDataMap.step];
       _stepSize = widget.stepMapData[FirebaseDataMap.stepSize];
       _diffucultyLevel = widget.stepMapData[FirebaseDataMap.difficultyLevel];
+      _descriptionInput = widget.stepMapData[FirebaseDataMap.description];
       _date = widget.stepMapData[FirebaseDataMap.targetDate].toDate();
       _dateLabel = _date.toString();
     });
@@ -106,6 +108,17 @@ class _PopupEditDialogState extends State<PopupEditDialog> {
                     setState(() {
                       _stepInput = value;
                       print(_stepInput);
+                    });
+                  },
+                ),
+                TextField(
+                  decoration: InputDecoration(
+                    icon: Icon(Icons.account_circle),
+                    labelText: _descriptionInput,
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      _descriptionInput = value;
                     });
                   },
                 ),

@@ -13,6 +13,7 @@ class FirebaseDataMap {
   static const isDone = 'isDone';
   static const user = 'user';
   static const goal = 'goal';
+  static const description = 'description';
 }
 
 class FirebaseHelper {
@@ -28,6 +29,7 @@ class FirebaseHelper {
     int stepSize,
     int difficultyLevel,
     User loggedInUser,
+    String description,
   }) async {
     print('addStepItems is called');
     print('loggedInUser is $loggedInUser');
@@ -40,20 +42,21 @@ class FirebaseHelper {
         FirebaseDataMap.stepSize: stepSize,
         FirebaseDataMap.isDone: false,
         FirebaseDataMap.user: loggedInUser.email,
+        FirebaseDataMap.description: description
       },
     );
   }
 
   // 4. Firestoreのデータ（steps）を編集する処理
-  void editStepItems({
-    String goalItem,
-    String stepItem,
-    DateTime targetDate,
-    int stepSize,
-    int difficultyLevel,
-    User loggedInUser,
-    String documentId,
-  }) async {
+  void editStepItems(
+      {String goalItem,
+      String stepItem,
+      DateTime targetDate,
+      int stepSize,
+      int difficultyLevel,
+      User loggedInUser,
+      String documentId,
+      String description}) async {
     print('editStepItems is called');
     print('loggedInUser is $loggedInUser');
     _firestore.collection('steps').doc(documentId).update(
@@ -65,6 +68,7 @@ class FirebaseHelper {
         FirebaseDataMap.stepSize: stepSize,
         FirebaseDataMap.isDone: false,
         FirebaseDataMap.user: loggedInUser.email,
+        FirebaseDataMap.description: description
       },
     );
   }

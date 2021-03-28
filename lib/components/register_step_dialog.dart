@@ -19,6 +19,7 @@ class _PopupRegisterDialogState extends State<PopupRegisterDialog> {
   int _stepSize; // ステップのレベル（大中小）
   // int _diffucultyLevel; // ステップのスコア（0~100）
   DateTime _date = new DateTime.now(); // 現在日時
+  String _descriptionInput; // 詳細の内容
 
   String _dateLabel = '日付を選択してください';
   // 日付選択ボタン押した時のイベント
@@ -75,6 +76,17 @@ class _PopupRegisterDialogState extends State<PopupRegisterDialog> {
                     });
                   },
                 ),
+                TextField(
+                  decoration: InputDecoration(
+                    icon: Icon(Icons.account_circle),
+                    labelText: 'Description(optional)',
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      _descriptionInput = value;
+                    });
+                  },
+                ),
                 Row(
                   children: [
                     Text(_dateLabel),
@@ -128,6 +140,7 @@ class _PopupRegisterDialogState extends State<PopupRegisterDialog> {
                         // difficultyLevel: _diffucultyLevel,
                         difficultyLevel: 50,
                         loggedInUser: widget.loggedInUser,
+                        description: _descriptionInput,
                       );
                     });
                     Navigator.of(context).pop();

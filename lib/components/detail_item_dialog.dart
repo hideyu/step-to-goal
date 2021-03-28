@@ -19,9 +19,25 @@ class PopupDetailDialog extends HookWidget {
     final context = useContext();
 
     return AlertDialog(
-      title: Text(
-        stepItem["documentId"],
-        style: TextStyle(fontSize: 12),
+      title: Column(
+        children: [
+          Text(
+            "step: ${stepItem['step']}",
+            style: TextStyle(fontSize: 12),
+          ),
+          Text(
+            "description: ${stepItem['description']}",
+            style: TextStyle(fontSize: 12),
+          ),
+          Text(
+            "isDone: ${stepItem['isDone']}",
+            style: TextStyle(fontSize: 12),
+          ),
+          Text(
+            "ID: ${stepItem['documentId']}",
+            style: TextStyle(fontSize: 12),
+          ),
+        ],
       ),
       actions: <Widget>[
         TextButton(

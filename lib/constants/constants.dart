@@ -1,22 +1,15 @@
 import 'package:flutter/material.dart';
 
-// const kSendButtonTextStyle = TextStyle(
-//   color: Colors.lightBlueAccent,
-//   fontWeight: FontWeight.bold,
-//   fontSize: 18.0,
-// );
+// **************************
+// 配色の設定
+// **************************
 
-// const kMessageTextFieldDecoration = InputDecoration(
-//   contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-//   hintText: 'Type your message here...',
-//   border: InputBorder.none,
-// );
-
-// const kMessageContainerDecoration = BoxDecoration(
-//   border: Border(
-//     top: BorderSide(color: Colors.lightBlueAccent, width: 2.0),
-//   ),
-// );
+const kBrandColor = "#d62e2e"; // メインのブランドカラー
+const kBaseColor = "#f4f5f9"; // 背景とかに使うベースカラー
+const kSupplementalColor = "#dddfe6"; // 線とかに使う補助的なカラー
+const kAccentColor = "#4e3f30"; // 目立たせる箇所に使うアクセントカラー
+const kFontColorLight = "#283d3e"; // フォントカラー
+// const kFontColorDark = "#333333";
 
 const kTextFieldDecoration = InputDecoration(
   hintText: 'Enter a value',
@@ -34,5 +27,3 @@ const kTextFieldDecoration = InputDecoration(
     borderRadius: BorderRadius.all(Radius.circular(32.0)),
   ),
 );
-
-// const firebaseDataMap = {'title': 'title', 'isDone': 'isDone'};

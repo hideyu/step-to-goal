@@ -13,8 +13,6 @@ class StepperScreen extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    // FirebaseHelper _firebasehelper = FirebaseHelper();
-
     // ***********************
     // プロバイダーから情報を取得
     // ***********************
@@ -38,7 +36,7 @@ class StepperScreen extends HookWidget {
     List<Widget> tabList = [];
     List<Widget> tabBarViewList = [];
     List<String> tabTitleList = [];
-    // TODO: TabControllerのindexからTabのtextの持ってき方がわかりません
+    // TODO: TabControllerのindexからTabのtextの持ってくるやり方がわかりません
     snapshotGoal.data.forEach((goalMap) {
       tabList.add(Text('${goalMap['goal']}'));
       tabTitleList.add(goalMap['goal']);

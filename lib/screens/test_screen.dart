@@ -26,8 +26,13 @@ class TestScreen extends HookWidget {
             child: Text("this is a test screen."),
           ),
           // Container(
-          // child: Text("$hoge"),
-          // ),
+          //   child: SvgPicture.asset(
+          //     "images/check.svg",
+          //     color: Colors.red,
+          //     width: 200,
+          //     height: 200,
+          //   ),
+          // )
         ],
       ),
     );

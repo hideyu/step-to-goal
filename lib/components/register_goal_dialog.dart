@@ -14,6 +14,7 @@ class PopupRegisterGoalDialog extends StatefulWidget {
 class _PopupRegisterGoalDialogState extends State<PopupRegisterGoalDialog> {
   FirebaseHelper _firebasehelper = FirebaseHelper();
   String _goalInput; // ゴールの内容
+  String _descriptionInput; // 詳細の内容
   DateTime _date = new DateTime.now(); // 現在日時
 
   String _dateLabel = '日付を選択してください';
@@ -83,6 +84,17 @@ class _PopupRegisterGoalDialogState extends State<PopupRegisterGoalDialog> {
                     ),
                   ],
                 ),
+                TextField(
+                  decoration: InputDecoration(
+                    icon: Icon(Icons.account_circle),
+                    labelText: 'Description(optional)',
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      _descriptionInput = value;
+                    });
+                  },
+                ),
                 TextButton(
                   child: Text('新しいゴールを登録する'),
                   onPressed: () {
@@ -95,6 +107,7 @@ class _PopupRegisterGoalDialogState extends State<PopupRegisterGoalDialog> {
                         // difficultyLevel: _diffucultyLevel,
                         difficultyLevel: 100,
                         loggedInUser: widget.loggedInUser,
+                        description: _descriptionInput,
                       );
 
                       // _firebasehelper.addGoalItems(
