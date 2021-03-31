@@ -19,27 +19,11 @@ final goalListStreamProvider = StreamProvider.autoDispose((_) {
     print(e);
   }
 
-  // TODO: 該当するゴールのやつだけ取得する
-  CollectionReference ref = FirebaseFirestore.instance.collection('steps');
-  Query query = ref
-      .where('user', isEqualTo: loggedInUser.email)
-      .where('stepSize', isEqualTo: 4); // クエリを追加
-  return query.snapshots().map((snapshot) => snapshot.docs.map(
-        (doc) {
-          // documentIdもMapの変数として格納する{documentId: xxx, isDone: false, ...}
-          // TODO: 他にもっといいやり方があるかも？
-          String documentId = doc.id;
-          Map<String, dynamic> documentMap = doc.data();
-          documentMap["documentId"] = documentId;
-          return documentMap;
-        },
-      )
-          // .map((doc) => doc.data())
-          .toList());
-});
-
-//   CollectionReference ref = FirebaseFirestore.instance.collection('goals');
-//   Query query = ref.where('goalUser', isEqualTo: loggedInUser.email); // クエリを追加
+//   // TODO: 該当するゴールのやつだけ取得する
+//   CollectionReference ref = FirebaseFirestore.instance.collection('steps');
+//   Query query = ref
+//       .where('user', isEqualTo: loggedInUser.email)
+//       .where('stepSize', isEqualTo: 4); // クエリを追加
 //   return query.snapshots().map((snapshot) => snapshot.docs.map(
 //         (doc) {
 //           // documentIdもMapの変数として格納する{documentId: xxx, isDone: false, ...}
@@ -54,6 +38,22 @@ final goalListStreamProvider = StreamProvider.autoDispose((_) {
 //           .toList());
 // });
 
+  CollectionReference ref = FirebaseFirestore.instance.collection('goals');
+  Query query = ref.where('goalUser', isEqualTo: loggedInUser.email); // クエリを追加
+  return query.snapshots().map((snapshot) => snapshot.docs.map(
+        (doc) {
+          // documentIdもMapの変数として格納する{documentId: xxx, isDone: false, ...}
+          // TODO: 他にもっといいやり方があるかも？
+          String documentId = doc.id;
+          Map<String, dynamic> documentMap = doc.data();
+          documentMap["documentId"] = documentId;
+          return documentMap;
+        },
+      )
+          // .map((doc) => doc.data())
+          .toList());
+});
+
 // ***************************************************************
 // Presenter: Viewを制御する（データを加工する場合はここで加工して出力する）
 // ***************************************************************
@@ -64,8 +64,8 @@ final goalListProvider = Provider.autoDispose((ref) async {
   final goalList = await futureGoalList;
 
   goalList.sort((a, b) {
-    var aDate = a['targetDate']; //before -> var adate = a.expiry;
-    var bDate = b['targetDate']; //var bdate = b.expiry;
+    var aDate = a['goalDate']; //before -> var adate = a.expiry;
+    var bDate = b['goalDate']; //var bdate = b.expiry;
     return -bDate.compareTo(aDate);
   });
 

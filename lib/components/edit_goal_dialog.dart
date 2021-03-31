@@ -2,28 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:step_to_goal/utils/firebase_helper.dart';
 
-class PopupEditDialog extends StatefulWidget {
-  final Map<String, dynamic> stepMapData;
-  PopupEditDialog({@required this.stepMapData});
+class PopupEditGoalDialog extends StatefulWidget {
+  final Map<String, dynamic> goalMapData;
+  PopupEditGoalDialog({@required this.goalMapData});
 
   @override
-  _PopupEditDialogState createState() => _PopupEditDialogState();
+  _PopupEditGoalDialogState createState() => _PopupEditGoalDialogState();
 }
 
-class _PopupEditDialogState extends State<PopupEditDialog> {
+class _PopupEditGoalDialogState extends State<PopupEditGoalDialog> {
   FirebaseHelper _firebasehelper = FirebaseHelper();
 
   // TODO: リファクター（プロバイダー使いたいけどよくわからない）
   // *************************
   // Input Field用の変数(state)
   // *************************
-  String _goalInput; // ゴールの内容
-  String _stepInput; // ステップの内容
-  int _stepSize; // ステップのレベル（大中小）
-  int _diffucultyLevel; // ステップのスコア（0~100）
+  String _goalTitleInput; // ゴールの内容
+  String _goalDescriptionInput; // ゴール詳細の内容
+
   DateTime _date; // 現在日時
   String _dateLabel = '日付を選択してください';
-  String _descriptionInput;
   User loggedInUser; // ログインユーザー取得用
 
   // ***************************************
@@ -38,12 +36,10 @@ class _PopupEditDialogState extends State<PopupEditDialog> {
     setState(() {
       loggedInUser = FirebaseAuth.instance.currentUser;
 
-      _goalInput = widget.stepMapData[FirebaseDataMap.goal];
-      _stepInput = widget.stepMapData[FirebaseDataMap.step];
-      _stepSize = widget.stepMapData[FirebaseDataMap.stepSize];
-      _diffucultyLevel = widget.stepMapData[FirebaseDataMap.difficultyLevel];
-      _descriptionInput = widget.stepMapData[FirebaseDataMap.description];
-      _date = widget.stepMapData[FirebaseDataMap.targetDate].toDate();
+      _goalTitleInput = widget.goalMapData[FirebaseDataMap.goalTitle];
+      _goalDescriptionInput =
+          widget.goalMapData[FirebaseDataMap.goalDescription];
+      _date = widget.goalMapData[FirebaseDataMap.goalDate].toDate();
       _dateLabel = _date.toString();
     });
   }
@@ -55,7 +51,7 @@ class _PopupEditDialogState extends State<PopupEditDialog> {
   void onPressedRaisedButton() async {
     final DateTime picked = await showDatePicker(
       context: context,
-      initialDate: widget.stepMapData["targetDate"].toDate(),
+      initialDate: widget.goalMapData["goalDate"].toDate(),
       firstDate: new DateTime(2021),
       lastDate: new DateTime.now().add(
         new Duration(days: 360),
@@ -95,30 +91,30 @@ class _PopupEditDialogState extends State<PopupEditDialog> {
             child: Column(
               children: [
                 Text(
-                  "Stepを編集する",
+                  "Goalを編集する",
                   style: TextStyle(fontSize: 16),
                   textAlign: TextAlign.center,
                 ),
                 TextField(
                   decoration: InputDecoration(
                     icon: Icon(Icons.account_circle),
-                    labelText: _stepInput,
+                    labelText: _goalTitleInput,
                   ),
                   onChanged: (value) {
                     setState(() {
-                      _stepInput = value;
-                      print(_stepInput);
+                      _goalTitleInput = value;
+                      print(_goalTitleInput);
                     });
                   },
                 ),
                 TextField(
                   decoration: InputDecoration(
                     icon: Icon(Icons.account_circle),
-                    labelText: _descriptionInput,
+                    labelText: _goalDescriptionInput,
                   ),
                   onChanged: (value) {
                     setState(() {
-                      _descriptionInput = value;
+                      _goalDescriptionInput = value;
                     });
                   },
                 ),
@@ -134,33 +130,6 @@ class _PopupEditDialogState extends State<PopupEditDialog> {
                     ),
                   ],
                 ),
-                DropdownButton(
-                  isExpanded: true,
-                  value: _stepSize,
-                  hint: Text("タスクのレベルを選択してね"),
-                  items: [
-                    DropdownMenuItem(
-                      child: Text('大テーマ'),
-                      value: 0,
-                    ),
-                    DropdownMenuItem(
-                      child: Text('中間目標'),
-                      value: 1,
-                    ),
-                    DropdownMenuItem(
-                      child: Text('小タスク'),
-                      value: 2,
-                    )
-                  ],
-                  onChanged: (value) {
-                    setState(
-                      () {
-                        _stepSize = value;
-                        print(_stepSize);
-                      },
-                    );
-                  },
-                ),
                 Row(
                   children: [
                     TextButton(
@@ -173,15 +142,12 @@ class _PopupEditDialogState extends State<PopupEditDialog> {
                       child: Text('ステップを編集する'),
                       onPressed: () {
                         setState(() {
-                          _firebasehelper.editStepItems(
-                            goalItem: _goalInput,
-                            stepItem: _stepInput,
-                            stepSize: _stepSize,
-                            targetDate: _date,
-                            difficultyLevel: _diffucultyLevel,
-                            // difficultyLevel: 50,
+                          _firebasehelper.editGoalItems(
+                            goalTitleInput: _goalTitleInput,
+                            goalDescription: _goalDescriptionInput,
+                            goalDate: _date,
                             loggedInUser: loggedInUser,
-                            documentId: widget.stepMapData["documentId"],
+                            documentId: widget.goalMapData["documentId"],
                           );
                         });
                         int count = 0;

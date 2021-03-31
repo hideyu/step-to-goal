@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:step_to_goal/components/delete_item_dialog.dart';
-import 'package:step_to_goal/components/edit_item_dialog.dart';
+import 'package:step_to_goal/components/delete_goal_dialog.dart';
+import 'package:step_to_goal/components/edit_goal_dialog.dart';
+import 'package:step_to_goal/components/edit_step_dialog.dart';
 import 'package:step_to_goal/utils/firebase_helper.dart';
 
-class PopupDetailDialog extends HookWidget {
-  final Map<String, dynamic> stepItem;
-  PopupDetailDialog({@required this.stepItem});
+class PopupGoalDetailDialog extends HookWidget {
+  final Map<String, dynamic> goalItem;
+  PopupGoalDetailDialog({@required this.goalItem});
 
   @override
   Widget build(BuildContext context) {
@@ -22,30 +23,30 @@ class PopupDetailDialog extends HookWidget {
       title: Column(
         children: [
           Text(
-            "step: ${stepItem['step']}",
+            "step: ${goalItem['goalTitle']}",
             style: TextStyle(fontSize: 12),
           ),
           Text(
-            "description: ${stepItem['description']}",
+            "description: ${goalItem['goalDescription']}",
             style: TextStyle(fontSize: 12),
           ),
           Text(
-            "isDone: ${stepItem['isDone']}",
+            "isDone: ${goalItem['goalIsDone']}",
             style: TextStyle(fontSize: 12),
           ),
           Text(
-            "ID: ${stepItem['documentId']}",
+            "ID: ${goalItem['documentId']}",
             style: TextStyle(fontSize: 12),
           ),
         ],
       ),
       actions: <Widget>[
         TextButton(
-          child: stepItem["isDone"] ? Text('Doneじゃない') : Text('Done'),
+          child: goalItem["goalIsDone"] ? Text('Doneじゃない') : Text('Done'),
           onPressed: () {
-            _firebaseHelper.toggleIsDone(
-                isDoneNow: stepItem["isDone"],
-                documentId: stepItem["documentId"]);
+            _firebaseHelper.toggleGoalIsDone(
+                isDoneNow: goalItem["goalIsDone"],
+                documentId: goalItem["documentId"]);
             Navigator.pop(context);
           },
         ),
@@ -58,7 +59,7 @@ class PopupDetailDialog extends HookWidget {
               context: context,
               barrierDismissible: false,
               builder: (BuildContext dialogContext) {
-                return PopupEditDialog(stepMapData: stepItem);
+                return PopupEditGoalDialog(goalMapData: goalItem);
               },
             );
           },
@@ -72,7 +73,7 @@ class PopupDetailDialog extends HookWidget {
               context: context,
               // barrierDismissible: false,
               builder: (BuildContext dialogContext) {
-                return PopupDeleteDialog(stepItem: stepItem);
+                return PopupDeleteGoalDialog(goalItem: goalItem);
               },
             );
           },

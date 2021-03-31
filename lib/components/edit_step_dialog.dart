@@ -1,36 +1,64 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:step_to_goal/utils/firebase_helper.dart';
 
-class PopupRegisterStepDialog extends StatefulWidget {
-  final User loggedInUser;
-  final DocumentReference goalReference;
-  const PopupRegisterStepDialog(
-      {@required this.loggedInUser, @required this.goalReference});
+class PopupEditStepDialog extends StatefulWidget {
+  final Map<String, dynamic> stepMapData;
+  PopupEditStepDialog({@required this.stepMapData});
 
   @override
-  _PopupRegisterStepDialogState createState() =>
-      _PopupRegisterStepDialogState();
+  _PopupEditStepDialogState createState() => _PopupEditStepDialogState();
 }
 
-class _PopupRegisterStepDialogState extends State<PopupRegisterStepDialog> {
+class _PopupEditStepDialogState extends State<PopupEditStepDialog> {
   FirebaseHelper _firebasehelper = FirebaseHelper();
+
+  // TODO: リファクター（プロバイダー使いたいけどよくわからない）
+  // *************************
+  // Input Field用の変数(state)
+  // *************************
   String _stepInput; // ステップの内容
   int _stepSize; // ステップのレベル（大中小）
-  // int _diffucultyLevel; // ステップのスコア（0~100）
-  DateTime _date = new DateTime.now(); // 現在日時
-  String _descriptionInput; // 詳細の内容
-
+  int _diffucultyLevel; // ステップのスコア（0~100）
+  DateTime _date; // 現在日時
   String _dateLabel = '日付を選択してください';
-  // 日付選択ボタン押した時のイベント
+  String _descriptionInput;
+  User loggedInUser; // ログインユーザー取得用
+
+  // ***************************************
+  // initState()
+  // ログインユーザーの取得（本当はプロバイダ使う）
+  // 初期値は現時点で登録されているデータを格納する
+  // ***************************************
+  @override
+  void initState() {
+    super.initState();
+
+    setState(() {
+      loggedInUser = FirebaseAuth.instance.currentUser;
+      _stepInput = widget.stepMapData[FirebaseDataMap.step];
+      _stepSize = widget.stepMapData[FirebaseDataMap.stepSize];
+      _diffucultyLevel = widget.stepMapData[FirebaseDataMap.difficultyLevel];
+      _descriptionInput = widget.stepMapData[FirebaseDataMap.description];
+      _date = widget.stepMapData[FirebaseDataMap.targetDate].toDate();
+      _dateLabel = _date.toString();
+    });
+  }
+
+  // ***************************************
+  // 自前の関数定義
+  // 日付選択ボタンを押した時のイベント
+  // ***************************************
   void onPressedRaisedButton() async {
     final DateTime picked = await showDatePicker(
-        context: context,
-        initialDate: _date,
-        firstDate: new DateTime(2021),
-        lastDate: new DateTime.now()
-            .add(new Duration(days: 360))); // TODO: より後年度の値も入れれるようにする
+      context: context,
+      initialDate: widget.stepMapData["targetDate"].toDate(),
+      firstDate: new DateTime(2021),
+      lastDate: new DateTime.now().add(
+        new Duration(days: 360),
+      ),
+    );
+    // TODO: より後年度の値も入れれるようにする
 
     if (picked != null) {
       // 日時の反映
@@ -43,6 +71,9 @@ class _PopupRegisterStepDialogState extends State<PopupRegisterStepDialog> {
 
   @override
   Widget build(BuildContext context) {
+    // final stateForm = useProvider(formInputProvider.state);
+    // final formInput = useProvider(formInputProvider);
+
     return Dialog(
       backgroundColor: Colors.transparent,
       insetPadding: EdgeInsets.all(10),
@@ -61,14 +92,14 @@ class _PopupRegisterStepDialogState extends State<PopupRegisterStepDialog> {
             child: Column(
               children: [
                 Text(
-                  "You can make cool stuff!",
+                  "Stepを編集する",
                   style: TextStyle(fontSize: 16),
                   textAlign: TextAlign.center,
                 ),
                 TextField(
                   decoration: InputDecoration(
                     icon: Icon(Icons.account_circle),
-                    labelText: 'New Step',
+                    labelText: _stepInput,
                   ),
                   onChanged: (value) {
                     setState(() {
@@ -80,7 +111,7 @@ class _PopupRegisterStepDialogState extends State<PopupRegisterStepDialog> {
                 TextField(
                   decoration: InputDecoration(
                     icon: Icon(Icons.account_circle),
-                    labelText: 'Description(optional)',
+                    labelText: _descriptionInput,
                   ),
                   onChanged: (value) {
                     setState(() {
@@ -116,7 +147,7 @@ class _PopupRegisterStepDialogState extends State<PopupRegisterStepDialog> {
                     DropdownMenuItem(
                       child: Text('小タスク'),
                       value: 2,
-                    )
+                    ),
                   ],
                   onChanged: (value) {
                     setState(
@@ -127,25 +158,33 @@ class _PopupRegisterStepDialogState extends State<PopupRegisterStepDialog> {
                     );
                   },
                 ),
-                TextButton(
-                  child: Text('新しいステップを登録する'),
-                  onPressed: () {
-                    setState(() {
-                      print("hogehoge");
-
-                      _firebasehelper.addStepItems(
-                        goalReference: widget.goalReference,
-                        stepItem: _stepInput,
-                        stepSize: _stepSize,
-                        targetDate: _date,
-                        // difficultyLevel: _diffucultyLevel,
-                        difficultyLevel: 50,
-                        loggedInUser: widget.loggedInUser,
-                        description: _descriptionInput,
-                      );
-                    });
-                    Navigator.of(context).pop();
-                  },
+                Row(
+                  children: [
+                    TextButton(
+                      child: Text('キャンセル'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    TextButton(
+                      child: Text('ステップを編集する'),
+                      onPressed: () {
+                        setState(() {
+                          _firebasehelper.editStepItems(
+                            stepItem: _stepInput,
+                            stepSize: _stepSize,
+                            targetDate: _date,
+                            difficultyLevel: _diffucultyLevel,
+                            // difficultyLevel: 50,
+                            loggedInUser: loggedInUser,
+                            documentId: widget.stepMapData["documentId"],
+                          );
+                        });
+                        int count = 0;
+                        Navigator.popUntil(context, (_) => count++ >= 2);
+                      },
+                    ),
+                  ],
                 ),
               ],
             ),

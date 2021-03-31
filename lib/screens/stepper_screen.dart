@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -35,19 +36,27 @@ class StepperScreen extends HookWidget {
     // *******************************************
     List<Widget> tabList = [];
     List<Widget> tabBarViewList = [];
-    List<String> tabTitleList = [];
-    // TODO: TabControllerのindexからTabのtextの持ってくるやり方がわかりません
+    List<DocumentReference> goalReferenceList = [];
     snapshotGoal.data.forEach((goalMap) {
-      tabList.add(Text('${goalMap['goal']}'));
-      tabTitleList.add(goalMap['goal']);
+      // タブに表示するためのリストを作成する
+      tabList.add(Text('${goalMap['goalTitle']}'));
 
-      final theGoal = goalMap["goal"];
+      //  そのゴールのDocumentReferenceを取得しリストに格納する
+      // TODO: ヘルパーに移動（）リファクタ
+      final goalDocumentReference = FirebaseFirestore.instance
+          .collection("goals")
+          .doc(goalMap['documentId']);
+      goalReferenceList.add(goalDocumentReference);
+
+      // そのゴールのDocumentReferenceを使って関連するステップを取得し、リストに格納
       final filteredStepList = snapshotStepList.data
-          .where((stepMap) => stepMap["goal"] == theGoal)
+          .where((stepMap) => stepMap["goalReference"] == goalDocumentReference)
           .toList();
 
+      // StepperTimelineListViewにはステップリストとゴールを渡す
       tabBarViewList.add(StepperTimelineListView(
         stepMapList: filteredStepList,
+        goalMap: goalMap,
       ));
     });
 
@@ -92,9 +101,9 @@ class StepperScreen extends HookWidget {
                   showDialog(
                     context: context,
                     builder: (_) {
-                      return PopupRegisterDialog(
+                      return PopupRegisterStepDialog(
                         loggedInUser: snapshotUser.data,
-                        goalInThisTab: tabTitleList[tabController.index],
+                        goalReference: goalReferenceList[tabController.index],
                       );
                     },
                   );

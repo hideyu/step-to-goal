@@ -4,9 +4,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:step_to_goal/utils/firebase_helper.dart';
 import 'package:step_to_goal/utils/user_repository.dart';
 
-class PopupDeleteDialog extends HookWidget {
+class PopupDeleteStepDialog extends HookWidget {
   final Map<String, dynamic> stepItem;
-  PopupDeleteDialog({@required this.stepItem});
+  PopupDeleteStepDialog({@required this.stepItem});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,7 @@ class PopupDeleteDialog extends HookWidget {
     final snapshotUser = useFuture(futureUser, initialData: null);
 
     return AlertDialog(
-      title: Text("本当に削除しますか？"),
+      title: Text("元に戻せません。本当に削除しますか？"),
       actions: [
         TextButton(
           onPressed: () {

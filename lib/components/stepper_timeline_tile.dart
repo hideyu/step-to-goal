@@ -1,49 +1,67 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:intl/intl.dart';
-import 'package:step_to_goal/components/detail_item_dialog.dart';
+import 'package:step_to_goal/components/detail_goal_dialog.dart';
+import 'package:step_to_goal/components/detail_step_dialog.dart';
+import 'package:step_to_goal/components/stepper_icon.dart';
 import 'package:step_to_goal/constants/constants.dart';
 import 'package:step_to_goal/utils/hexcolor_helper.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 
 class StepperTimelineTile extends HookWidget {
   final Map<String, dynamic> stepItem;
+  final Map<String, dynamic> goalItem;
   final String position;
-  // final User user;
-  StepperTimelineTile({@required this.stepItem, @required this.position});
+  // ステップかゴールのどちらかの引数をとる
+  StepperTimelineTile({this.stepItem, this.goalItem, @required this.position});
 
   @override
   Widget build(BuildContext context) {
-    String formattedDate =
-        DateFormat('MM/dd').format(stepItem["targetDate"].toDate());
+    // 受け取る引数がゴールなのかステップなのかによって変数の中身を変える
+    // TODO: リファクター（useState？）
+    bool isGoal = goalItem != null;
+    DateTime date = isGoal
+        ? goalItem['goalDate'].toDate()
+        : stepItem['targetDate'].toDate();
+    String formattedDate = DateFormat('MM/dd').format(date);
+    bool isDone = isGoal ? goalItem['goalIsDone'] : stepItem['isDone'];
+    String title = isGoal ? goalItem['goalTitle'] : stepItem['step'];
 
     return Container(
       // color: Colors.blue.shade50,
       child: Material(
         type: MaterialType.transparency,
         child: InkWell(
-          highlightColor: Colors.redAccent,
-          splashColor: Colors.red,
+          // highlightColor: Colors.redAccent,
+          // splashColor: Colors.red,
           onTap: () {
             showDialog(
               context: context,
               // barrierDismissible: false,
               builder: (BuildContext dialogContext) {
-                return PopupDetailDialog(
-                  stepItem: stepItem,
-                );
+                return isGoal
+                    ? PopupGoalDetailDialog(goalItem: goalItem)
+                    : PopupStepDetailDialog(stepItem: stepItem);
               },
             );
           },
           child: TimelineTile(
             indicatorStyle: IndicatorStyle(
-              color: HexColor(kBrandColor),
-              width: 20,
-              indicatorXY: 0.3,
-              // indicator: Image.asset('images/nowStep.svg'),
-            ),
-            beforeLineStyle: LineStyle(color: HexColor(kSupplementalColor)),
-            afterLineStyle: LineStyle(color: HexColor(kSupplementalColor)),
+                color: HexColor(kBrandColor),
+                width: 30,
+                height: 30,
+                indicatorXY: 0.3,
+                indicator: StepperIcon(
+                  isDone: isDone,
+                  // targetDate: stepItem['targetDate'].toDate(),
+                  targetDate: date,
+                  stepSize: 0,
+                ),
+                padding: EdgeInsets.symmetric(vertical: 5)),
+            beforeLineStyle:
+                LineStyle(color: HexColor(kSupplementalColor), thickness: 3),
+            afterLineStyle:
+                LineStyle(color: HexColor(kSupplementalColor), thickness: 3),
             alignment: TimelineAlign.manual,
             lineXY: 0.15,
             isFirst: position == "first",
@@ -84,7 +102,7 @@ class StepperTimelineTile extends HookWidget {
                       Container(
                         // color: Colors.pink,
                         child: Text(
-                          "${stepItem['step']}",
+                          title,
                           style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
@@ -114,22 +132,6 @@ class StepperTimelineTile extends HookWidget {
                 ],
               ),
             ),
-            // endChild: Row(
-            //   children: [
-            //     SizedBox(
-            //       width: 10,
-            //       height: 50,
-            //     ),
-            //     // widget.stepText,
-            //     Column(
-            //       children: [
-            //         Text(
-            //             "${stepItem['step']}, ${stepItem['isDone']}. ${stepItem['user']}"),
-            //         Text("hogehoge")
-            //       ],
-            //     ),
-            //   ],
-            // ),
           ),
         ),
       ),
